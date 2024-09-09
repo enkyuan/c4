@@ -12,6 +12,10 @@ typedef struct {
     int value;
 } Token;
 
+extern char *src;
+extern char *current;
+
+void initLexer(char *source);
 Token getNextToken();
 
 #endif

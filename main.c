@@ -1,4 +1,4 @@
-// TODO: expand on boilerplate code
+// TODO: fix type passing error with file pointer - line 22
 
 #include <stdio.h>
 #include "lexer.h"
@@ -19,13 +19,13 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  lexer_init(input_file);
-  parser_init();
-  semantic_init();
-  codegen_init();
+  initLexer(input_file);
+  initParser();
+  semanticInit();
+  codegenInit();
 
   while (1) {
-    Token token = lexer_get_next_token();
+    Token token = getNextToken();
     if (token.type == TOKEN_EOF) {
       break;
     }
