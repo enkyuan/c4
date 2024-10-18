@@ -1,3 +1,5 @@
+// FIXME: return types for parsing functions
+
 #ifndef PARSER_H
 #define PARSER_H
 
@@ -17,7 +19,7 @@ typedef struct Node {
 
 extern Token currentToken;
 
-void parserInit();
+void initParser();
 
 int parseExpression();
 
