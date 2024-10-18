@@ -2,4 +2,4 @@
 
 ## about
 
-compiler in C
+compiler in C for C. 'nuff said.
