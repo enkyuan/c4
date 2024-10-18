@@ -1,5 +1,6 @@
 // TODO: document this code - explain each line
 
+#include <stdio.h>
 #include "lexer.h"
 
 char *src;

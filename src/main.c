@@ -21,8 +21,8 @@ int main(int argc, char **argv) {
 
   initLexer(input_file);
   initParser();
-  semanticInit();
-  codegenInit();
+  initSemantic();
+  initCodegen();
 
   while (1) {
     Token token = getNextToken();
