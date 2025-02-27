@@ -98,7 +98,22 @@ void test_string_literals() {
     
     token = lexer_next_token(lexer);
     assert(token->type == TOKEN_STRING_LITERAL);
-    assert(strcmp(token->value.string_value, "Test\nEscape") == 0);
+    
+    // Compare character by character to handle escape sequences
+    const char* value = token->value.string_value;
+    assert(value[0] == 'T');
+    assert(value[1] == 'e');
+    assert(value[2] == 's');
+    assert(value[3] == 't');
+    assert(value[4] == '\n');
+    assert(value[5] == 'E');
+    assert(value[6] == 's');
+    assert(value[7] == 'c');
+    assert(value[8] == 'a');
+    assert(value[9] == 'p');
+    assert(value[10] == 'e');
+    assert(value[11] == '\0');
+    
     free(token);
     
     lexer_free(lexer);

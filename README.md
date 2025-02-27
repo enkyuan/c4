@@ -49,3 +49,9 @@ Compile a C source file:
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+### TODO
+
+- [] Add support for more C11 features
+- [] Improve error reporting
+- [] Revert compatibility to ARM64 instead of X86_64

@@ -202,28 +202,66 @@ static Token* number(Lexer* lexer) {
 // Scan a string literal
 static Token* string(Lexer* lexer) {
     size_t start = lexer->current - 1;  // Include the opening quote
-    
+    size_t buf_size = 256;
+    char* buffer = malloc(buf_size);
+    size_t buf_idx = 0;
+
     while (peek(lexer) != '"' && peek(lexer) != '\0') {
-        if (peek(lexer) == '\n') lexer->line++;
-        if (peek(lexer) == '\\') advance(lexer); // Skip escape character
+        if (peek(lexer) == '\n') {
+            lexer->line++;
+            lexer->column = 1;
+        }
+
+        char c = peek(lexer);
+        if (c == '\\') {
+            advance(lexer);  // Skip backslash
+            c = peek(lexer);
+            switch (c) {
+                case 'n':
+                    buffer[buf_idx++] = '\n';  // Replace \n with newline
+                    break;
+                case 't':
+                    buffer[buf_idx++] = '\t';  // Replace \t with tab
+                    break;
+                case 'r':
+                    buffer[buf_idx++] = '\r';  // Replace \r with carriage return
+                    break;
+                case '\\':
+                    buffer[buf_idx++] = '\\';  // Replace \\ with backslash
+                    break;
+                case '"':
+                    buffer[buf_idx++] = '"';  // Replace \" with double quote
+                    break;
+                default:
+                    buffer[buf_idx++] = c;  // Handle unknown escape sequences
+                    break;
+            }
+        } else {
+            buffer[buf_idx++] = c;  // Add regular character to buffer
+        }
+
+        if (buf_idx >= buf_size - 1) {
+            buf_size *= 2;
+            buffer = realloc(buffer, buf_size);
+        }
+
         advance(lexer);
     }
-    
+
     if (peek(lexer) == '\0') {
-        // Unterminated string
+        free(buffer);
         return make_token(lexer, TOKEN_ERROR, start, 1);
     }
-    
-    advance(lexer); // Closing quote
-    size_t length = lexer->current - start;
-    
-    Token* token = make_token(lexer, TOKEN_STRING_LITERAL, start, length);
-    
-    // Remove the quotes
-    token->value.string_value = malloc(length - 1);
-    strncpy(token->value.string_value, &lexer->source[start + 1], length - 2);
-    token->value.string_value[length - 2] = '\0';
-    
+
+    advance(lexer);  // Consume the closing quote
+    buffer[buf_idx] = '\0';  // Null-terminate the buffer
+
+    // Create token with raw lexeme (including quotes and escapes)
+    Token* token = make_token(lexer, TOKEN_STRING_LITERAL, start, lexer->current - start);
+
+    // Set the processed string value
+    token->value.string_value = buffer;  // Transfer ownership of buffer to token
+
     return token;
 }
 
@@ -324,7 +362,7 @@ Token* lexer_next_token(Lexer* lexer) {
         case '"': return string(lexer);
     }
     
-    return make_token(lexer, TOKEN_ERROR);
+    return make_token(lexer, TOKEN_ERROR, lexer->current, 1);
 }
 
 char* token_type_to_string(TokenType type) {
